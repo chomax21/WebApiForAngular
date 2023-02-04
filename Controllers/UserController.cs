@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Angular_2.Models;
+using Microsoft.AspNetCore.Mvc;
 
 
 namespace Angular_2.Controllers

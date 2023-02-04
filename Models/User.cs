@@ -1,4 +1,4 @@
-﻿namespace Angular_2
+﻿namespace Angular_2.Models
 {
     public class User
     {
