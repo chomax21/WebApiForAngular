@@ -5,6 +5,6 @@
         public int Id { get; set; }
         public string Case { get; set; }
         public DateTime DateTimeDateTime { get; set; }
-        public bool IsDone { get; set; }
+        public bool IsDone { get; set; } = false;
     }
 }
