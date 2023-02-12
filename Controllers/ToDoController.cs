@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore;
 namespace Angular_2.Controllers
 {
     [ApiController]
+    [Route("api")]
     public class ToDoController : ControllerBase     
     {
         private readonly ApplicationContext _context;
@@ -14,10 +15,10 @@ namespace Angular_2.Controllers
         {
             _context = context;
         }
-
+        [Route("create")]
         public async Task<IResult> CreateToDoList(int id, string message)
         {
-            var toDoCase = await _context.ToDoLists.FirstOrDefaultAsync(x => x.Id == id);
+            var toDoCase = await _context.ToDoLists.FirstOrDefaultAsync(x => x.Id == id && x.IsDone == false);
             if (toDoCase == null) 
             {
                 ToDoList doList = new();
@@ -29,9 +30,10 @@ namespace Angular_2.Controllers
             }            
             return Results.Json(toDoCase);
         }
+        [Route("getready")]
         public async Task<IResult> GetToDoList(int id)
         {
-            var toDo = await _context.ToDoLists.FirstOrDefaultAsync(x => x.Id == id);
+            var toDo = await _context.ToDoLists.FirstOrDefaultAsync(x => x.Id == id && x.IsDone == false);
             if (toDo == null)
             {
                 return Results.NotFound();
@@ -39,6 +41,17 @@ namespace Angular_2.Controllers
             return Results.Json(toDo);
         }
 
+        [Route("getnotready")]
+        public async Task<IResult> GetNotComplitedToDoList(int id)
+        {
+            var toDo = await _context.ToDoLists.FirstOrDefaultAsync(x => x.Id == id && x.IsDone == false);
+            if (toDo == null)
+            {
+                return Results.NotFound();
+            }
+            return Results.Json(toDo);
+        }
+        [Route("change")]
         public async Task<IResult> ChangeStatus(int id)
         {
             var toDoCase = await _context.ToDoLists.FirstOrDefaultAsync(x => x.Id == id);
@@ -49,6 +62,11 @@ namespace Angular_2.Controllers
             toDoCase.IsDone = true;
             await _context.SaveChangesAsync();
             return Results.Ok("Succesfull change!");
+        }
+
+        public async Task<IResult> DeleteToDoList(int id)
+        {
+            return null;
         }
     }
 }
