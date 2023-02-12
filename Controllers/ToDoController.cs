@@ -66,7 +66,13 @@ namespace Angular_2.Controllers
 
         public async Task<IResult> DeleteToDoList(int id)
         {
-            return null;
+            var doList = await _context.ToDoLists.FirstOrDefaultAsync(x=>x.Id == id);
+            if (doList != null)
+            {
+                _context.ToDoLists.Remove(doList);
+                return Results.Ok("Deleted");
+            }
+            return Results.NotFound();
         }
     }
 }
