@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 namespace Angular_2.Controllers
 {
     [ApiController]
-    [Route("api")]
+    [Route("/api")]
     public class ToDoController : ControllerBase     
     {
         private readonly ApplicationContext _context;
@@ -15,6 +15,8 @@ namespace Angular_2.Controllers
         {
             _context = context;
         }
+
+        [HttpPost]
         [Route("create")]
         public async Task<IResult> CreateToDoList(int id, string message)
         {
@@ -23,13 +25,15 @@ namespace Angular_2.Controllers
             {
                 ToDoList doList = new();
                 doList.Case = message;
-                doList.DateTimeDateTime = DateTime.Now;
+                //doList.DateTime = DateTimeOffset.Now;
                 await _context.AddAsync(doList);
                 await _context.SaveChangesAsync();
                 return Results.Json("Create a new ToDoCase");
             }            
             return Results.Json(toDoCase);
         }
+
+        [HttpGet]
         [Route("getready")]
         public async Task<IResult> GetToDoList(int id)
         {
@@ -41,6 +45,7 @@ namespace Angular_2.Controllers
             return Results.Json(toDo);
         }
 
+        [HttpGet]
         [Route("getnotready")]
         public async Task<IResult> GetNotComplitedToDoList(int id)
         {
@@ -51,6 +56,8 @@ namespace Angular_2.Controllers
             }
             return Results.Json(toDo);
         }
+
+        [HttpPut]
         [Route("change")]
         public async Task<IResult> ChangeStatus(int id)
         {
@@ -64,6 +71,8 @@ namespace Angular_2.Controllers
             return Results.Ok("Succesfull change!");
         }
 
+        [HttpDelete]
+        [Route("delete")]
         public async Task<IResult> DeleteToDoList(int id)
         {
             var doList = await _context.ToDoLists.FirstOrDefaultAsync(x=>x.Id == id);

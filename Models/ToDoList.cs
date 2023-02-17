@@ -4,7 +4,7 @@
     {
         public int Id { get; set; }
         public string Case { get; set; }
-        public DateTime DateTimeDateTime { get; set; }
+        public DateTimeOffset DateTime { get; set; } = DateTimeOffset.Now;
         public bool IsDone { get; set; } = false;
     }
 }
