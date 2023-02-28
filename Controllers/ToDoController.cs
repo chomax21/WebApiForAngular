@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 namespace Angular_2.Controllers
 {
     [ApiController]
-    [Route("/api")]
+    [Route("api")]
     public class ToDoController : ControllerBase     
     {
         private readonly ApplicationContext _context;
@@ -68,7 +68,7 @@ namespace Angular_2.Controllers
             }
             toDoCase.IsDone = true;
             await _context.SaveChangesAsync();
-            return Results.Ok("Succesfull change!");
+            return Results.Ok("Successful change!");
         }
 
         [HttpDelete]

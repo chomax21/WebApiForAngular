@@ -8,5 +8,10 @@
         public string LastName { get; set; }
         public string Hobby { get; set; }
         public string City { get; set; }
+
+        public override string ToString()
+        {
+            return $"[FirstName: {FirstName}, LastName: {LastName}, Age: {Age}, Hobby: {Hobby}, City: {City}]"; 
+        }
     }
 }

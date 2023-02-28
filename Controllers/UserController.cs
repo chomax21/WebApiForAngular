@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace Angular_2.Controllers
 {
     [ApiController]
+    [Route("user")]
     public class UserController : ControllerBase
     {
         public UserController()
@@ -15,28 +16,27 @@ namespace Angular_2.Controllers
 
 
         [HttpGet]
-        [Route("/User/GetUser/{id}")]
-        public User GetUser(int id)
+        [Route("getuser/{id}")]
+        public IResult GetUser(int id)
         {
             var user = Users.FirstOrDefault(x => x.Id == id);
             if (user!=null)
             {
-                return user;
-                //return Results.Json(user);
+                return Results.Content(user.ToString());
             }
-            //return Results.NotFound(new { message = "Error in Get method" });
-            return null;
+            return Results.NotFound(new { message = "Error in Get method" });
+            //return null;
         }
 
         [HttpGet]
-        [Route("/User/GetAllusers")]
+        [Route("getallusers")]
         public IResult GetAllUsers()
         {
             return Results.Json(Users);
         }
 
         [HttpPost]
-        [Route("/User/CreateUser")]
+        [Route("createuser")]
         public IResult CreateNewUser(User user)
         {
             if (user == null)
@@ -45,7 +45,7 @@ namespace Angular_2.Controllers
                 return Results.Json(newUser,statusCode: 200);
         }
         [HttpPut]
-        [Route("/User/UpdateUser")]
+        [Route("updateUser")]
         public IResult UpdateUser(User userIn)
         {
             if (userIn == null)
@@ -56,7 +56,7 @@ namespace Angular_2.Controllers
             return Results.Json(userIn, statusCode: 200);
         }
         [HttpDelete]
-        [Route("/User/DeleteUser")]
+        [Route("deleteUser")]
         public IResult DeleteUser(User userIn)
         {
             if (userIn == null)
