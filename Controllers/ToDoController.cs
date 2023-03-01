@@ -28,7 +28,7 @@ namespace Angular_2.Controllers
                 //doList.DateTime = DateTimeOffset.Now;
                 await _context.AddAsync(doList);
                 await _context.SaveChangesAsync();
-                return Results.Json("Create a new ToDoCase");
+                return Results.Json("Create a new ToDoCase", null, "text", 200);
             }            
             return Results.Json(toDoCase);
         }
@@ -37,7 +37,7 @@ namespace Angular_2.Controllers
         [Route("getready")]
         public async Task<IResult> GetToDoList(int id)
         {
-            var toDo = await _context.ToDoLists.FirstOrDefaultAsync(x => x.Id == id && x.IsDone == false);
+            var toDo = await _context.ToDoLists.FirstOrDefaultAsync(x => x.Id == id && x.IsDone == true);
             if (toDo == null)
             {
                 return Results.NotFound();
