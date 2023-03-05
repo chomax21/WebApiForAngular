@@ -25,7 +25,6 @@ namespace Angular_2.Controllers
             {
                 ToDoList doList = new();
                 doList.Case = message;
-                //doList.DateTime = DateTimeOffset.Now;
                 await _context.AddAsync(doList);
                 await _context.SaveChangesAsync();
                 return Results.Json("Create a new ToDoCase", null, "text", 200);
@@ -37,24 +36,24 @@ namespace Angular_2.Controllers
         [Route("getready")]
         public async Task<IResult> GetToDoList(int id)
         {
-            var toDo = await _context.ToDoLists.FirstOrDefaultAsync(x => x.Id == id && x.IsDone == true);
-            if (toDo == null)
+            var toDoCase = await _context.ToDoLists.FirstOrDefaultAsync(x => x.Id == id && x.IsDone == true);
+            if (toDoCase == null)
             {
                 return Results.NotFound();
             }
-            return Results.Json(toDo);
+            return Results.Json(toDoCase);
         }
 
         [HttpGet]
         [Route("getnotready")]
         public async Task<IResult> GetNotComplitedToDoList(int id)
         {
-            var toDo = await _context.ToDoLists.FirstOrDefaultAsync(x => x.Id == id && x.IsDone == false);
-            if (toDo == null)
+            var toDoCase = await _context.ToDoLists.FirstOrDefaultAsync(x => x.Id == id && x.IsDone == false);
+            if (toDoCase == null)
             {
                 return Results.NotFound();
             }
-            return Results.Json(toDo);
+            return Results.Json(toDoCase, statusCode: 200);
         }
 
         [HttpPut]
@@ -68,18 +67,18 @@ namespace Angular_2.Controllers
             }
             toDoCase.IsDone = true;
             await _context.SaveChangesAsync();
-            return Results.Ok("Successful change!");
+            return Results.Json(toDoCase, statusCode: 200);
         }
 
         [HttpDelete]
         [Route("delete")]
         public async Task<IResult> DeleteToDoList(int id)
         {
-            var doList = await _context.ToDoLists.FirstOrDefaultAsync(x=>x.Id == id);
-            if (doList != null)
+            var toDoCase = await _context.ToDoLists.FirstOrDefaultAsync(x=>x.Id == id);
+            if (toDoCase != null)
             {
-                _context.ToDoLists.Remove(doList);
-                return Results.Ok("Deleted");
+                _context.ToDoLists.Remove(toDoCase);
+                return Results.Json(toDoCase, statusCode: 200);
             }
             return Results.NotFound();
         }
