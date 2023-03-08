@@ -37,7 +37,7 @@ namespace Angular_2.Controllers
                     return Results.Json("Аргументом приоритета являются значения от 0 до 2! " + aEx.Message, statusCode: 400);
                 }                
             }            
-            return Results.Json(toDoCase);
+            return Results.Json("ID Занят!!!");
         }
 
         [HttpGet]
