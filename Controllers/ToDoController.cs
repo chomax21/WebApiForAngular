@@ -18,16 +18,24 @@ namespace Angular_2.Controllers
 
         [HttpPost]
         [Route("create")]
-        public async Task<IResult> CreateToDoList(int id, string message)
+        public async Task<IResult> CreateToDoList(int id, string message, int priority = 0)
         {
             var toDoCase = await _context.ToDoLists.FirstOrDefaultAsync(x => x.Id == id && x.IsDone == false);
             if (toDoCase == null) 
             {
-                ToDoList doList = new();
-                doList.Case = message;
-                await _context.AddAsync(doList);
-                await _context.SaveChangesAsync();
-                return Results.Json("Create a new ToDoCase", null, "text", 200);
+                try
+                {
+                    ToDoList doList = new();
+                    doList.Case = message;
+                    doList.Priority = priority;
+                    await _context.AddAsync(doList);
+                    await _context.SaveChangesAsync();
+                    return Results.Json("Create a new ToDoCase", null, "text", 200);
+                }
+                catch (ArgumentException aEx)
+                {
+                    return Results.Json("Аргументом приоритета являются значения от 0 до 2! " + aEx.Message, statusCode: 400);
+                }                
             }            
             return Results.Json(toDoCase);
         }
