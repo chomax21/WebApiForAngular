@@ -7,7 +7,7 @@ namespace Angular_2.Controllers
 {
     [ApiController]
     [Route("api")]
-    public class ToDoController : ControllerBase     
+    public class ToDoController : ControllerBase
     {
         private readonly ApplicationContext _context;
 
@@ -19,25 +19,23 @@ namespace Angular_2.Controllers
         [HttpPost]
         [Route("create")]
         public async Task<IResult> CreateToDoList(int id, string message, int priority = 0)
-        {
-            var toDoCase = await _context.ToDoLists.FirstOrDefaultAsync(x => x.Id == id && x.IsDone == false);
-            if (toDoCase == null) 
+        {                       
+            if (!string.IsNullOrEmpty(message))
             {
-                try
+                List<ToDoList> toDoLists = new();
+                ToDoList doList = new();
+                doList.Case = message;
+                doList.Priority = priority;
+                await _context.AddAsync(doList);
+                await _context.SaveChangesAsync();
+                var toDoCase = _context.ToDoLists.Where(x => x.Id == id && x.IsDone == false);
+                if (toDoCase != null)
                 {
-                    ToDoList doList = new();
-                    doList.Case = message;
-                    doList.Priority = priority;
-                    await _context.AddAsync(doList);
-                    await _context.SaveChangesAsync();
-                    return Results.Json("Create a new ToDoCase", null, "text", 200);
-                }
-                catch (ArgumentException aEx)
-                {
-                    return Results.Json("Аргументом приоритета являются значения от 0 до 2! " + aEx.Message, statusCode: 400);
+                    toDoLists = toDoCase.ToList();
                 }                
-            }            
-            return Results.Json("ID Занят!!!");
+                return Results.Json(toDoLists, null, "text/json", 200);               
+            }
+            return Results.Json("Нет информации!!!");
         }
 
         [HttpGet]
@@ -82,7 +80,7 @@ namespace Angular_2.Controllers
         [Route("delete")]
         public async Task<IResult> DeleteToDoList(int id)
         {
-            var toDoCase = await _context.ToDoLists.FirstOrDefaultAsync(x=>x.Id == id);
+            var toDoCase = await _context.ToDoLists.FirstOrDefaultAsync(x => x.Id == id);
             if (toDoCase != null)
             {
                 _context.ToDoLists.Remove(toDoCase);
