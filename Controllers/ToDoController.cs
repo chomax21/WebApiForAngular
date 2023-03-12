@@ -18,22 +18,16 @@ namespace Angular_2.Controllers
 
         [HttpPost]
         [Route("create")]
-        public async Task<IResult> CreateToDoList(int id, string message, int priority = 0)
+        public async Task<IResult> CreateToDoList(ToDoList doList)
         {                       
-            if (!string.IsNullOrEmpty(message))
+            if (!string.IsNullOrEmpty(doList.Case))
             {
                 List<ToDoList> toDoLists = new();
-                ToDoList doList = new();
-                doList.Case = message;
-                doList.Priority = priority;
+                doList.Case = doList.Case;
+                doList.Priority = doList.Priority;
                 await _context.AddAsync(doList);
-                await _context.SaveChangesAsync();
-                var toDoCase = _context.ToDoLists.Where(x => x.Id == id && x.IsDone == false);
-                if (toDoCase != null)
-                {
-                    toDoLists = toDoCase.ToList();
-                }                
-                return Results.Json(toDoLists, null, "text/json", 200);               
+                await _context.SaveChangesAsync();                             
+                return Results.Json("Succes",statusCode: 200);               
             }
             return Results.Json("Нет информации!!!");
         }
