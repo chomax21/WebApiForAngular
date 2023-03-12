@@ -22,12 +22,19 @@ namespace Angular_2.Controllers
         {                       
             if (!string.IsNullOrEmpty(doList.Case))
             {
-                List<ToDoList> toDoLists = new();
-                doList.Case = doList.Case;
-                doList.Priority = doList.Priority;
-                await _context.AddAsync(doList);
-                await _context.SaveChangesAsync();                             
-                return Results.Json("Succes",statusCode: 200);               
+                var user = _context.Users.FirstOrDefault(x=> x.FirstName == doList.User.FirstName && x.Password == doList.User.Password);
+                if (user != null)
+                {
+                    doList.Case = doList.Case;
+                    doList.Priority = doList.Priority;
+                    await _context.AddAsync(doList);
+                    await _context.SaveChangesAsync();
+                    return Results.Json("Succes", statusCode: 200);
+                }
+                else
+                {
+                    return Results.Forbid();
+                }              
             }
             return Results.Json("Нет информации!!!");
         }
