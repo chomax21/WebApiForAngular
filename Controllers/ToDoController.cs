@@ -2,6 +2,7 @@
 using Angular_2.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Text.Json;
 
 namespace Angular_2.Controllers
 {
@@ -17,14 +18,40 @@ namespace Angular_2.Controllers
         }
 
         [HttpPost]
+        [Route("create-user")]
+        public async Task<IResult> CreateUser(User user)
+        {
+            var result = await _context.Users.FirstOrDefaultAsync(x => x.Login == user.Login);
+            if (result == null)
+            {
+                user.UserId = Guid.NewGuid().ToString();
+                await _context.Users.AddAsync(user);
+                await _context.SaveChangesAsync();
+                return Results.Ok($"Пользователь {user.Login} успешно создан!");
+            }
+            return Results.Conflict("Пользователь с таким логином уже существует!");
+        }
+
+
+        [HttpGet]
+        [Route("get-user-id")]
+        public async Task<IResult> GetUserId(string login, string password) 
+        {
+            var result = await _context.Users.FirstOrDefaultAsync(x => x.Login == login && x.Password == password);
+            if (result != null)
+                return Results.Ok(result.UserId);
+            return Results.NotFound("Нет ифнормации!!!");        }
+
+        [HttpPost]
         [Route("create")]
         public async Task<IResult> CreateToDoList(ToDoList doList)
         {                       
             if (!string.IsNullOrEmpty(doList.Case))
             {
-                var user = _context.Users.FirstOrDefault(x=> x.FirstName == doList.User.FirstName && x.Password == doList.User.Password);
+                var user = _context.Users.FirstOrDefault(x=> x.UserId == doList.UserId);
                 if (user != null)
                 {
+                    doList.UserId= user.UserId;
                     doList.Case = doList.Case;
                     doList.Priority = doList.Priority;
                     await _context.AddAsync(doList);
@@ -33,7 +60,7 @@ namespace Angular_2.Controllers
                 }
                 else
                 {
-                    return Results.Forbid();
+                    return Results.Conflict("Пользователя не существует!");
                 }              
             }
             return Results.Json("Нет информации!!!");
@@ -41,14 +68,15 @@ namespace Angular_2.Controllers
 
         [HttpGet]
         [Route("getready")]
-        public async Task<IResult> GetToDoList(int id)
-        {
-            var toDoCase = await _context.ToDoLists.FirstOrDefaultAsync(x => x.Id == id && x.IsDone == true);
+        public async Task<IResult> GetToDoLists(string UserId)
+        {      
+            IQueryable<ToDoList> toDoCase = _context.ToDoLists.Where(x => x.UserId == UserId);
             if (toDoCase == null)
             {
                 return Results.NotFound();
             }
-            return Results.Json(toDoCase);
+            var list = JsonSerializer.Serialize(toDoCase);
+            return Results.Json(toDoCase, statusCode: 200);
         }
 
         [HttpGet]

@@ -7,7 +7,7 @@
         public DateTimeOffset DateTime { get; set; } = DateTimeOffset.Now;
         public bool IsDone { get; set; } = false;    
         public int Priority { get; set; }
-        public User User { get; set; }
+        public string UserId { get; set; }
 
     }
 }
