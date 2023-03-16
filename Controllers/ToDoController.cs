@@ -69,8 +69,12 @@ namespace Angular_2.Controllers
         [HttpGet]
         [Route("getready")]
         public async Task<IResult> GetToDoLists(string UserId)
-        {      
-            IQueryable<ToDoList> toDoCase = _context.ToDoLists.Where(x => x.UserId == UserId);
+        {
+            if (UserId == null)
+            {
+                return Results.NotFound("Не пришел ID");
+            }
+            var toDoCase = _context.ToDoLists.Where(x => x.UserId == UserId);
             if (toDoCase == null)
             {
                 return Results.NotFound();
@@ -78,6 +82,8 @@ namespace Angular_2.Controllers
             var list = JsonSerializer.Serialize(toDoCase);
             return Results.Json(toDoCase, statusCode: 200);
         }
+
+
 
         [HttpGet]
         [Route("getnotready")]
