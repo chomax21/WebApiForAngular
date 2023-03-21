@@ -111,6 +111,11 @@ namespace Angular_2.Controllers
             if (doListInBack.UserId == doListInFront.UserId)
             {
                 doListInBack.Case = doListInFront.Case;
+                doListInBack.Priority = doListInFront.Priority;
+            }
+            else
+            {
+                return Results.BadRequest("Data lost");
             }
             await _context.SaveChangesAsync();
             return Results.Json(doListInBack, statusCode: 200);
