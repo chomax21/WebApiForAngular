@@ -37,10 +37,12 @@ namespace Angular_2.Controllers
         [Route("get-user-id")]
         public async Task<IResult> GetUserId(string login, string password) 
         {
+             
             var result = await _context.Users.FirstOrDefaultAsync(x => x.Login == login && x.Password == password);
             if (result != null)
                 return Results.Ok(result.UserId);
-            return Results.NotFound("Нет ифнормации!!!");        }
+            return Results.NotFound("Нет ифнормации!!!");
+        }
 
         [HttpPost]
         [Route("create")]
@@ -67,7 +69,7 @@ namespace Angular_2.Controllers
         }
 
         [HttpGet]
-        [Route("getready")]
+        [Route("get-ready")]
         public async Task<IResult> GetToDoLists(string UserId)
         {
             if (UserId == null)
@@ -86,7 +88,7 @@ namespace Angular_2.Controllers
 
 
         [HttpGet]
-        [Route("getnotready")]
+        [Route("get-not-ready")]
         public async Task<IResult> GetNotComplitedToDoList(int id)
         {
             var toDoCase = await _context.ToDoLists.FirstOrDefaultAsync(x => x.Id == id && x.IsDone == false);
@@ -99,16 +101,19 @@ namespace Angular_2.Controllers
 
         [HttpPut]
         [Route("change")]
-        public async Task<IResult> ChangeStatus(int id)
+        public async Task<IResult> ChangeStatus(ToDoList doListInFront)
         {
-            var toDoCase = await _context.ToDoLists.FirstOrDefaultAsync(x => x.Id == id);
-            if (toDoCase == null)
+            var doListInBack = await _context.ToDoLists.FirstOrDefaultAsync(x => x.Id == doListInFront.Id);
+            if (doListInBack == null)
             {
                 return Results.NotFound();
             }
-            toDoCase.IsDone = true;
+            if (doListInBack.UserId == doListInFront.UserId)
+            {
+                doListInBack.Case = doListInFront.Case;
+            }
             await _context.SaveChangesAsync();
-            return Results.Json(toDoCase, statusCode: 200);
+            return Results.Json(doListInBack, statusCode: 200);
         }
 
         [HttpDelete]
