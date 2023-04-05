@@ -2,6 +2,10 @@
 using Angular_2.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Text;
 using System.Text.Json;
 
 namespace Angular_2.Controllers
@@ -36,12 +40,43 @@ namespace Angular_2.Controllers
         [HttpGet]
         [Route("get-user-id")]
         public async Task<IResult> GetUserId(string login, string password) 
+        {            
+            var identity = GetIdentity(login, password);
+            if (identity == null)
+                return Results.BadRequest(new { errorText = "Нет ифнормации!!!" });
+            var now = DateTime.UtcNow;
+            var key = new SymmetricSecurityKey(Encoding.ASCII.GetBytes("superpasswordsuperpassword"));
+            var jwt = new JwtSecurityToken(
+                issuer: "angular_2_server",
+                audience: "angular_2_client",
+                notBefore: now,
+                claims: identity.Claims,
+                expires: now.Add(TimeSpan.FromMinutes(1)),
+                signingCredentials: new SigningCredentials(key, SecurityAlgorithms.HmacSha256));
+            var encodedJwt = new JwtSecurityTokenHandler().WriteToken(jwt);
+            //var result = await _context.Users.FirstOrDefaultAsync(x => x.Login == login && x.Password == password);
+            //if (result != null)
+            var response = new
+            {
+                acces_token = encodedJwt,
+                username = login,
+            };
+                return Results.Ok(response);
+        }
+
+        private ClaimsIdentity GetIdentity(string login, string password)
         {
-             
-            var result = await _context.Users.FirstOrDefaultAsync(x => x.Login == login && x.Password == password);
-            if (result != null)
-                return Results.Ok(result.UserId);
-            return Results.NotFound("Нет ифнормации!!!");
+            var user = _context.Users.FirstOrDefault(x => x.Login == login && x.Password == password);
+            if (user != null)
+            {
+                var claims = new List<Claim>
+                {
+                    new Claim(ClaimsIdentity.DefaultNameClaimType, user.Login)                    
+                };
+                ClaimsIdentity claimsIdentity = new ClaimsIdentity(claims, ClaimsIdentity.DefaultNameClaimType);
+                return claimsIdentity;
+            }
+            return null;
         }
 
         [HttpPost]

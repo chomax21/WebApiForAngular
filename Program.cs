@@ -22,7 +22,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         ValidateAudience = true,
         ValidAudience = "angular_2_client",
         ValidateLifetime = true,
-        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("superpassword")),
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("superpasswordsuperpassword")),
         ValidateIssuerSigningKey = true,
     });
 builder.Services.AddDbContext<ApplicationContext>(options =>
