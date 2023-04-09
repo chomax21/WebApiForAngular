@@ -22,7 +22,7 @@ namespace Angular_2.Controllers
         }
 
         [HttpPost]
-        [Route("create-user")]
+        [Route("user")]
         public async Task<IResult> CreateUser(User user)
         {
             var result = await _context.Users.FirstOrDefaultAsync(x => x.Login == user.Login);
@@ -38,12 +38,13 @@ namespace Angular_2.Controllers
 
 
         [HttpGet]
-        [Route("get-user-id")]
+        [Route("user-id")]
         public async Task<IResult> GetUserId(string login, string password) 
         {            
             var identity = GetIdentity(login, password);
             if (identity == null)
                 return Results.BadRequest(new { errorText = "Нет ифнормации!!!" });
+
             var now = DateTime.UtcNow;
             var key = new SymmetricSecurityKey(Encoding.ASCII.GetBytes("superpasswordsuperpassword"));
             var jwt = new JwtSecurityToken(
@@ -54,12 +55,17 @@ namespace Angular_2.Controllers
                 expires: now.Add(TimeSpan.FromMinutes(1)),
                 signingCredentials: new SigningCredentials(key, SecurityAlgorithms.HmacSha256));
             var encodedJwt = new JwtSecurityTokenHandler().WriteToken(jwt);
-            //var result = await _context.Users.FirstOrDefaultAsync(x => x.Login == login && x.Password == password);
-            //if (result != null)
+
+            string userId = "userId";
+            var result = await _context.Users.FirstOrDefaultAsync(x => x.Login == login && x.Password == password);
+            if (result != null)
+            {
+                userId= result.UserId;
+            }
             var response = new
             {
                 acces_token = encodedJwt,
-                username = login,
+                Id = userId,
             };
                 return Results.Ok(response);
         }
@@ -80,7 +86,7 @@ namespace Angular_2.Controllers
         }
 
         [HttpPost]
-        [Route("create")]
+        [Route("item")]
         public async Task<IResult> CreateToDoList(ToDoList doList)
         {                       
             if (!string.IsNullOrEmpty(doList.Case))
@@ -104,7 +110,7 @@ namespace Angular_2.Controllers
         }
 
         [HttpGet]
-        [Route("get-ready")]
+        [Route("ready-item")]
         public async Task<IResult> GetToDoLists(string UserId)
         {
             if (UserId == null)
@@ -123,7 +129,7 @@ namespace Angular_2.Controllers
 
 
         [HttpGet]
-        [Route("get-not-ready")]
+        [Route("not-ready-item")]
         public async Task<IResult> GetNotComplitedToDoList(int id)
         {
             var toDoCase = await _context.ToDoLists.FirstOrDefaultAsync(x => x.Id == id && x.IsDone == false);
@@ -135,7 +141,7 @@ namespace Angular_2.Controllers
         }
 
         [HttpPut]
-        [Route("change")]
+        [Route("item")]
         public async Task<IResult> ChangeStatus(ToDoList doListInFront)
         {
             var doListInBack = await _context.ToDoLists.FirstOrDefaultAsync(x => x.Id == doListInFront.Id);
@@ -157,7 +163,7 @@ namespace Angular_2.Controllers
         }
 
         [HttpDelete]
-        [Route("delete")]
+        [Route("item")]
         public async Task<IResult> DeleteToDoList(int id)
         {
             var toDoCase = await _context.ToDoLists.FirstOrDefaultAsync(x => x.Id == id);
