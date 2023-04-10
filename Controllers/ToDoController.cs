@@ -1,5 +1,6 @@
 ﻿using Angular_2.Data;
 using Angular_2.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -77,9 +78,10 @@ namespace Angular_2.Controllers
             {
                 var claims = new List<Claim>
                 {
-                    new Claim(ClaimsIdentity.DefaultNameClaimType, user.Login)                    
+                    new Claim("Id",user.UserId),                  
+                    new Claim("Login",user.Login)                   
                 };
-                ClaimsIdentity claimsIdentity = new ClaimsIdentity(claims, ClaimsIdentity.DefaultNameClaimType);
+                ClaimsIdentity claimsIdentity = new ClaimsIdentity(claims);
                 return claimsIdentity;
             }
             return null;
@@ -87,6 +89,7 @@ namespace Angular_2.Controllers
 
         [HttpPost]
         [Route("item")]
+        [Authorize]
         public async Task<IResult> CreateToDoList(ToDoList doList)
         {                       
             if (!string.IsNullOrEmpty(doList.Case))
@@ -111,6 +114,7 @@ namespace Angular_2.Controllers
 
         [HttpGet]
         [Route("ready-item")]
+        [Authorize]
         public async Task<IResult> GetToDoLists(string UserId)
         {
             if (UserId == null)
@@ -130,6 +134,7 @@ namespace Angular_2.Controllers
 
         [HttpGet]
         [Route("not-ready-item")]
+        [Authorize]
         public async Task<IResult> GetNotComplitedToDoList(int id)
         {
             var toDoCase = await _context.ToDoLists.FirstOrDefaultAsync(x => x.Id == id && x.IsDone == false);
@@ -142,6 +147,7 @@ namespace Angular_2.Controllers
 
         [HttpPut]
         [Route("item")]
+        [Authorize]
         public async Task<IResult> ChangeStatus(ToDoList doListInFront)
         {
             var doListInBack = await _context.ToDoLists.FirstOrDefaultAsync(x => x.Id == doListInFront.Id);
@@ -164,6 +170,7 @@ namespace Angular_2.Controllers
 
         [HttpDelete]
         [Route("item")]
+        [Authorize]
         public async Task<IResult> DeleteToDoList(int id)
         {
             var toDoCase = await _context.ToDoLists.FirstOrDefaultAsync(x => x.Id == id);
