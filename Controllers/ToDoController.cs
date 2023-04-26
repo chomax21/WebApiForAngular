@@ -66,9 +66,9 @@ namespace Angular_2.Controllers
             var response = new
             {
                 acces_token = encodedJwt,
-                Id = userId,
+                id = userId,
             };
-                return Results.Ok(response);
+                return Results.Json(response);
         }
 
         private ClaimsIdentity GetIdentity(string login, string password)

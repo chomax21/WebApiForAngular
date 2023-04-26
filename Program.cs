@@ -39,7 +39,7 @@ builder.Services.AddSwaggerGen(options =>
     {
         In = Microsoft.OpenApi.Models.ParameterLocation.Header,
         Description = "Enter token",
-        Name = "Aithorization",
+        Name = "Authorization",
         Type =  Microsoft.OpenApi.Models.SecuritySchemeType.Http,
         BearerFormat = "JWT",
         Scheme = "bearer"
@@ -70,15 +70,16 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+app.UseCors(options => options.WithOrigins("http://localhost:4200")
+.AllowAnyHeader()
+.AllowAnyMethod());
+
 app.UseHttpsRedirection();
 
 app.UseAuthentication();
 app.UseAuthorization();
 
-app.UseCors(options => options.AllowAnyOrigin()
-                              .AllowAnyHeader()
-                              .AllowAnyMethod()
-                              .Build());
+
 
 app.MapControllers();
 
